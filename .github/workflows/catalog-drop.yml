@@ -1,0 +1,81 @@
+name: Catalog drop
+
+# Runs every Monday; the scraper only publishes on every third week, so a fresh
+# drop lands every 3 weeks. Run manually with "force" to drop now.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Publish a drop now, ignoring the 3-week schedule"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-drop
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Scraping runs third-party code against untrusted HTML, so it gets a read-only token.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      dropped: ${{ steps.drop.outputs.dropped }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+      - name: Build drop
+        id: drop
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          FORCE: ${{ inputs.force && '--force' || '' }}
+        run: uv run --project tools/scraper python -m driftwall_scraper --catalog-dir catalog drop $FORCE
+      - name: Upload catalog
+        if: steps.drop.outputs.dropped == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: catalog
+          path: catalog/
+          retention-days: 7
+
+  commit:
+    needs: build
+    if: needs.build.outputs.dropped == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: catalog
+          path: catalog/
+      - name: Check the catalog is well formed
+        run: python3 -c "import json; c=json.load(open('catalog/catalog.json')); assert c['schemaVersion']==1 and c['wallpapers'], 'empty or bad catalog'"
+      - name: Commit catalog
+        run: |
+          git config user.name "driftwall-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalog
+          git commit -m "chore: catalog drop $(date -u +%Y-%m-%d)"
+          git push origin HEAD:main
+
+  deploy:
+    needs: commit
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml

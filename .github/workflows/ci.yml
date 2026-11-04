@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    name: DriftwallCore tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Swift version
+        run: swift --version
+      - name: Test
+        run: cd Packages/DriftwallCore && swift test
+
+  app:
+    name: Build app
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build
+        run: |
+          xcodegen generate
+          xcodebuild -project Driftwall.xcodeproj -scheme Driftwall -configuration Release \
+            -derivedDataPath .build/xcode CODE_SIGNING_ALLOWED=NO build
+
+  scraper:
+    name: Scraper tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+      - name: Test
+        run: cd tools/scraper && uv run pytest -q

@@ -1,0 +1,130 @@
+{
+ "schemaVersion": 1,
+ "generatedAt": "2026-11-23T06:00:00+00:00",
+ "dropId": "2026-11-23",
+ "nextDropAt": "2026-12-14",
+ "featured": [
+  "mixkit-2",
+  "mixkit-1"
+ ],
+ "drops": [
+  {
+   "dropId": "2026-11-02",
+   "date": "2026-11-02",
+   "ids": [
+    "mixkit-1",
+    "mixkit-3",
+    "mixkit-4"
+   ]
+  },
+  {
+   "dropId": "2026-11-23",
+   "date": "2026-11-23",
+   "ids": [
+    "mixkit-2"
+   ]
+  }
+ ],
+ "wallpapers": [
+  {
+   "id": "mixkit-1",
+   "title": "Misty Forest Morning",
+   "description": "desc",
+   "category": "Nature",
+   "tags": [
+    "night",
+    "rain"
+   ],
+   "source": "mixkit",
+   "sourcePageUrl": "https://mixkit.co/free-stock-video/x-1/",
+   "previewUrl": "https://assets.mixkit.co/videos/1/1-720.mp4",
+   "videoUrl": "https://assets.mixkit.co/videos/1/1-2160.mp4",
+   "posterUrl": "https://assets.mixkit.co/videos/1/1-thumb-720-0.jpg",
+   "author": "Mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "licenseUrl": "https://mixkit.co/license/#videoFree",
+   "durationSeconds": 20,
+   "width": 3840,
+   "height": 2160,
+   "fileSizeMB": 40.5,
+   "uploadedAt": "2025-06-01T00:00:00+00:00",
+   "sourceRank": 5,
+   "addedInDrop": "2026-11-02"
+  },
+  {
+   "id": "mixkit-2",
+   "title": "Aurora Over Lake",
+   "description": "desc",
+   "category": "Space",
+   "tags": [
+    "night",
+    "rain"
+   ],
+   "source": "mixkit",
+   "sourcePageUrl": "https://mixkit.co/free-stock-video/x-2/",
+   "previewUrl": "https://assets.mixkit.co/videos/2/2-720.mp4",
+   "videoUrl": "https://assets.mixkit.co/videos/2/2-2160.mp4",
+   "posterUrl": "https://assets.mixkit.co/videos/2/2-thumb-720-0.jpg",
+   "author": "Mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "licenseUrl": "https://mixkit.co/license/#videoFree",
+   "durationSeconds": 30,
+   "width": 3840,
+   "height": 2160,
+   "fileSizeMB": 40.5,
+   "uploadedAt": "2025-06-01T00:00:00+00:00",
+   "sourceRank": 1,
+   "addedInDrop": "2026-11-23"
+  },
+  {
+   "id": "mixkit-3",
+   "title": "Wallpaper 3",
+   "description": "desc",
+   "category": "City",
+   "tags": [
+    "night",
+    "rain"
+   ],
+   "source": "mixkit",
+   "sourcePageUrl": "https://mixkit.co/free-stock-video/x-3/",
+   "previewUrl": "https://assets.mixkit.co/videos/3/3-720.mp4",
+   "videoUrl": "https://assets.mixkit.co/videos/3/3-2160.mp4",
+   "posterUrl": "https://assets.mixkit.co/videos/3/3-thumb-720-0.jpg",
+   "author": "Mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "licenseUrl": "https://mixkit.co/license/#videoFree",
+   "durationSeconds": 20,
+   "width": 1280,
+   "height": 720,
+   "fileSizeMB": 40.5,
+   "uploadedAt": "2025-06-01T00:00:00+00:00",
+   "sourceRank": 2,
+   "addedInDrop": "2026-11-02"
+  },
+  {
+   "id": "mixkit-4",
+   "title": "Wallpaper 4",
+   "description": "desc",
+   "category": "City",
+   "tags": [
+    "night",
+    "rain"
+   ],
+   "source": "mixkit",
+   "sourcePageUrl": "https://mixkit.co/free-stock-video/x-4/",
+   "previewUrl": "http://assets.mixkit.co/videos/4/4-720.mp4",
+   "videoUrl": "http://assets.mixkit.co/videos/4/4-2160.mp4",
+   "posterUrl": "http://assets.mixkit.co/videos/4/4-thumb-720-0.jpg",
+   "author": "Mixkit",
+   "license": "Mixkit Stock Video Free License",
+   "licenseUrl": "https://mixkit.co/license/#videoFree",
+   "durationSeconds": 20,
+   "width": 3840,
+   "height": 2160,
+   "fileSizeMB": 40.5,
+   "uploadedAt": "2025-06-01T00:00:00+00:00",
+   "sourceRank": 3,
+   "addedInDrop": "2026-11-02"
+  }
+ ]
+}

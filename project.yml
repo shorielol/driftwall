@@ -1,0 +1,75 @@
+name: Driftwall
+options:
+  bundleIdPrefix: app.driftwall
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+packages:
+  DriftwallCore:
+    path: Packages/DriftwallCore
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    SWIFT_VERSION: "6.0"
+
+targets:
+  Driftwall:
+    type: application
+    platform: macOS
+    sources:
+      - path: App/Driftwall
+      - path: catalog/catalog.json
+        buildPhase: resources
+    dependencies:
+      - package: DriftwallCore
+    info:
+      path: App/Driftwall/Info.plist
+      properties:
+        CFBundleDisplayName: Driftwall
+        CFBundleName: Driftwall
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.utilities
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHumanReadableCopyright: "Driftwall is open source (MIT). Wallpapers belong to their creators."
+        CFBundleURLTypes:
+          - CFBundleURLName: Driftwall Wallpaper Link
+            CFBundleTypeRole: Viewer
+            CFBundleURLSchemes: [driftwall]
+        DriftwallCatalogURL: https://shorielol.github.io/driftwall/catalog.json
+    entitlements:
+      path: App/Driftwall/Driftwall.entitlements
+      properties:
+        com.apple.security.app-sandbox: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.driftwall.Driftwall
+        PRODUCT_NAME: Driftwall
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "-"
+        DEVELOPMENT_TEAM: ""
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_TREAT_WARNINGS_AS_ERRORS: NO
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+        DEAD_CODE_STRIPPING: YES
+        COMBINE_HIDPI_IMAGES: YES
+
+schemes:
+  Driftwall:
+    build:
+      targets:
+        Driftwall: all
+    run:
+      config: Debug
+    archive:
+      config: Release
