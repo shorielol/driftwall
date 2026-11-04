@@ -6,7 +6,8 @@ FALLBACK_CATEGORY = "Abstract"
 
 # Ordered from most specific to most generic: the first match wins for item tags.
 CATEGORY_TAGS: dict[str, tuple[str, ...]] = {
-    "Anime": ("anime",),
+    # Anime comes only from the Pixabay/Pexels APIs; Mixkit's "anime" tag is vintage comics.
+    "Anime": (),
     "Cats": ("cat", "cats", "kitten"),
     "Wildlife": ("wildlife", "birds", "bird", "butterfly", "fish", "jellyfish"),
     "Animated": ("animation", "illustration", "drawing", "cartoon", "motion-graphics", "gradient"),

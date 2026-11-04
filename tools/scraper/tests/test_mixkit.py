@@ -115,3 +115,11 @@ def test_parse_detail_accepts_full_hd_when_no_4k():
     assert item is not None
     assert (item.width, item.height) == (1920, 1080)
     assert item.video_url.endswith("100417-video-1080.mp4")
+
+
+@pytest.mark.parametrize(
+    "title",
+    ["Artist painting a still life", "DJ playing music at a nightclub", "Covers of three vintage comics", "Poker Game Setting", "Video game controller"],
+)
+def test_scenery_filter_rejects_artists_djs_comics_and_props(title):
+    assert is_wallpaper_worthy(title, "", ()) is False

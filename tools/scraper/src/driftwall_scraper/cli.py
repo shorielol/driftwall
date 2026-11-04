@@ -170,6 +170,25 @@ def run_drop(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_curate(args: argparse.Namespace) -> int:
+    """Re-apply the current content filters to a published catalog without re-crawling."""
+    from .mixkit import is_wallpaper_worthy
+
+    catalog_dir = Path(args.catalog_dir)
+    catalog, seen = _load(catalog_dir)
+    rejected = {
+        w.id for w in catalog.wallpapers
+        if w.source == "mixkit" and (w.category == "Anime" or not is_wallpaper_worthy(w.title, "", w.tags))
+    }
+    if not rejected:
+        log.info("catalog already satisfies the filters (%d entries)", len(catalog.wallpapers))
+        return 0
+    curated = refill_featured(prune(catalog, rejected))
+    _publish(catalog_dir, curated, seen, list(curated.drops))
+    log.info("removed %d entries; %d remain", len(rejected), len(curated.wallpapers))
+    return 0
+
+
 def run_validate(args: argparse.Namespace) -> int:
     catalog_dir = Path(args.catalog_dir)
     catalog, seen = _load(catalog_dir)
@@ -206,6 +225,9 @@ def build_parser() -> argparse.ArgumentParser:
     drop.add_argument("--max-pages", type=_positive_int, default=4)
     drop.add_argument("--delay", type=float, default=1.0, help="seconds between requests")
     drop.set_defaults(handler=run_drop)
+
+    curate = sub.add_parser("curate", help="re-apply content filters to the existing catalog")
+    curate.set_defaults(handler=run_curate)
 
     validate = sub.add_parser("validate", help="check every published link")
     validate.add_argument("--prune", action="store_true", help="remove dead entries instead of failing")

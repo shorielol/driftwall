@@ -98,3 +98,16 @@ def test_size_must_be_positive(catalog_dir):
 
 def test_today_is_not_used_when_overridden():
     assert date.fromisoformat("2026-11-02").weekday() == 0
+
+
+def test_curate_removes_entries_failing_current_filters(monkeypatch, catalog_dir):
+    from factories import make as mk
+
+    keep = mk("keep", "Nature")
+    drop = mk("drop", "Animated").with_changes(title="DJ playing music at a club")
+    comic = mk("comic", "Anime").with_changes(title="Old west scene")
+    patch_sources(monkeypatch, [keep, drop, comic])
+    run(catalog_dir, "--initial-size", "5")
+
+    assert cli.main(["--catalog-dir", str(catalog_dir), "curate"]) == 0
+    assert [w.id for w in read_catalog(catalog_dir).wallpapers] == ["keep"]

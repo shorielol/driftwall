@@ -27,7 +27,9 @@ _PEOPLE_WORDS = (
     r"wom[ae]n|m[ae]n|people|persons?|girls?|boys?|guys?|lady|ladies|couples?|famil(?:y|ies)|"
     r"child(?:ren)?|kids?|bab(?:y|ies)|gentlem[ae]n|crowds?|hands?|fingers?|faces?|portraits?|selfies?|"
     r"typing|laptops?|keyboards?|(?:smart)?phones?|offices?|business\w*|doctors?|workers?|meetings?|"
-    r"dancers?|dancing|models?|tourists?|athletes?|players?|friends?|gamers?|gaming|group|teams?|students?|dogs?|puppy|puppies"
+    r"dancers?|dancing|models?|tourists?|athletes?|players?|friends?|gamers?|gaming|group|teams?|students?|dogs?|puppy|puppies|"
+    r"artists?|painters?|djs?|dj's|musicians?|singers?|comics?|comic-book|poker|casino|cards|tablet|screens?|television|tv|"
+    r"controller|turntables?|vinyl|records?|recorder|brushes|palette|easel"
 )
 # Hyphen-aware word boundaries, so "Man-made lake" and "Hand-held shot" stay in.
 _UNSUITABLE = re.compile(rf"(?<![\w-])(?:{_PEOPLE_WORDS})(?![\w-])", re.IGNORECASE)
