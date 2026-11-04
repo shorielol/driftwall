@@ -38,6 +38,7 @@ struct RootView: View {
             }
         }
         .overlay(alignment: .bottom) { BannerView() }
+        .overlay(alignment: .bottomTrailing) { DownloadOfferView() }
         .overlay { if isDropTargeted { DropTargetOverlay() } }
         .dropDestination(for: URL.self) { urls, _ in
             let files = urls.filter(\.isFileURL)
@@ -226,6 +227,41 @@ struct BannerView: View {
             }
         }
         .animation(Theme.Motion.standard, value: model.banner)
+    }
+}
+
+/// "Use as wallpaper?" for a video that just finished downloading (Settings → Downloads).
+struct DownloadOfferView: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        ZStack {
+            if let url = model.downloadOffer {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "arrow.down.circle.fill").font(.system(size: 20)).foregroundStyle(Theme.teal)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Use as wallpaper?").font(Theme.Typeface.title(15)).foregroundStyle(.white)
+                            Text(url.lastPathComponent).font(Theme.Typeface.caption).foregroundStyle(Theme.textSecondary)
+                                .lineLimit(1).truncationMode(.middle)
+                        }
+                    }
+                    HStack(spacing: 8) {
+                        ChromaticButton(title: "Set Wallpaper", systemImage: "sparkles") { model.useOfferedDownload() }
+                        GlassButton(title: "Import", systemImage: "square.and.arrow.down") { model.importOfferedDownload() }
+                        GlassButton(title: nil, systemImage: "xmark", help: "Not now") { model.dismissDownloadOffer() }
+                    }
+                }
+                .padding(16)
+                .frame(width: 360, alignment: .leading)
+                .glass(cornerRadius: Theme.Radius.panel)
+                .padding(24)
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel(Text("New download: \(url.lastPathComponent). Use as wallpaper?"))
+            }
+        }
+        .animation(Theme.Motion.standard, value: model.downloadOffer)
     }
 }
 

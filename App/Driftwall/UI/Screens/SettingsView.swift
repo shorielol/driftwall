@@ -43,6 +43,9 @@ struct SettingsView: View {
             Toggle("Match the lock screen with a still frame", isOn: model.binding(\.setStaticFallback))
             Text("macOS doesn't let third-party apps animate the lock screen. Driftwall sets a still from your live wallpaper so it matches.")
                 .settingsFootnote()
+            Toggle("Offer new videos from Downloads as wallpapers", isOn: model.binding(\.watchDownloads))
+            Text("When an MP4, MOV or M4V finishes downloading, Driftwall asks if you want to use it. Imports stay on this Mac. macOS will ask once for access to Downloads.")
+                .settingsFootnote()
         }
     }
 
@@ -166,7 +169,7 @@ struct SettingsView: View {
             LabeledContent("Version") {
                 Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0")
             }
-            Text("Wallpapers come from Mixkit (Mixkit Stock Video Free License) and Pexels (Pexels License). Each preview credits its creator and links to the original.")
+            Text("Space loops come from NASA (public domain), ESA/Webb and ESA/Hubble (CC BY 4.0). Film loops are cut from Blender open movies (CC BY). Each preview credits its source and links to the original.")
                 .settingsFootnote()
             HStack {
                 Link("Source on GitHub", destination: URL(string: "https://github.com/shorielol/driftwall")!)

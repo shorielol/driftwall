@@ -71,6 +71,8 @@ final class AppModel {
     var isWindowVisible = true
     var showOnboarding = !UserDefaults.standard.bool(forKey: AppModel.onboardingKey)
     var banner: Banner?
+    /// A video that just finished downloading, offered as a wallpaper (opt-in Downloads watching).
+    var downloadOffer: URL?
     var downloads: [String: Double] = [:]
     private(set) var isRefreshing = false
     private(set) var cacheBytes: Int64 = 0
@@ -103,6 +105,7 @@ final class AppModel {
     /// False until auto-start is on or the user sets a wallpaper this session.
     @ObservationIgnored var playbackEnabled = false
     @ObservationIgnored private var started = false
+    @ObservationIgnored var downloadsWatcher: DownloadsWatcher?
 
     init() {
         let paths = AppPaths.live
@@ -148,6 +151,7 @@ final class AppModel {
         engine.setRate(settings.playbackRate)
         engine.setScaling(settings.scaling)
         refreshDisplays()
+        if settings.watchDownloads { setWatchingDownloads(true) }
 
         Task {
             catalog = await catalogService.loadCachedOrSeed()
@@ -362,7 +366,7 @@ final class AppModel {
 
     static let importableExtensions: Set<String> = ["mp4", "mov", "m4v"]
 
-    func importCustom(from urls: [URL]) {
+    func importCustom(from urls: [URL], then completion: (([Wallpaper]) -> Void)? = nil) {
         let unsupported = urls.filter { !Self.importableExtensions.contains($0.pathExtension.lowercased()) }
         if let first = unsupported.first {
             let hint = first.pathExtension.lowercased() == "webm" ? " WebM can't play on macOS; convert it to MP4 first." : ""
@@ -371,12 +375,14 @@ final class AppModel {
         let urls = urls.filter { Self.importableExtensions.contains($0.pathExtension.lowercased()) }
         guard !urls.isEmpty else { return }
         Task {
+            var imported: [Wallpaper] = []
             for url in urls {
                 do {
                     let wallpaper = try await CustomImporter.importVideo(
                         at: url, videosDirectory: paths.customVideos, postersDirectory: paths.customPosters
                     )
                     customWallpapers.append(wallpaper)
+                    imported.append(wallpaper)
                     persist { try customStore.save(customWallpapers) }
                     if !wallpaper.meetsMinimumResolution {
                         show("Imported “\(wallpaper.title)”, but it's \(wallpaper.width)×\(wallpaper.height), below landscape 1080p, so it may look soft.", isError: true)
@@ -389,6 +395,7 @@ final class AppModel {
             }
             await protectInUseVideos()
             await refreshCacheSize()
+            completion?(imported)
         }
     }
 
@@ -485,7 +492,8 @@ final class AppModel {
             playbackRate: next.playbackRate, scaling: next.scaling, cacheLimitGB: next.cacheLimitGB,
             notifyNewDrops: next.notifyNewDrops, rotateLatestDrop: next.rotateLatestDrop,
             rotationInterval: next.rotationInterval, setStaticFallback: next.setStaticFallback,
-            catalogURLOverride: next.catalogURLOverride, dayNightSchedule: next.dayNightSchedule
+            catalogURLOverride: next.catalogURLOverride, dayNightSchedule: next.dayNightSchedule,
+            watchDownloads: next.watchDownloads
         )
         settings = next
         persist { try settingsStore.save(next) }
@@ -512,6 +520,7 @@ final class AppModel {
             startLatestDropRotation()
         }
         if old.dayNightSchedule != new.dayNightSchedule { refreshDayNightSchedules(new.dayNightSchedule) }
+        if old.watchDownloads != new.watchDownloads { setWatchingDownloads(new.watchDownloads) }
         if new.setStaticFallback, !old.setStaticFallback {
             stillShown = [:]
             reconcile()

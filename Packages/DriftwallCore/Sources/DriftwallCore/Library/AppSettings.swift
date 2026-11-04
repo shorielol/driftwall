@@ -47,13 +47,15 @@ public struct AppSettings: Codable, Hashable, Sendable {
     public var setStaticFallback: Bool
     public var catalogURLOverride: String
     public var dayNightSchedule: DayNightSchedule
+    /// Offer to import videos that land in ~/Downloads. Off by default: it needs folder access.
+    public var watchDownloads: Bool
 
     public init(
         launchAtLogin: Bool = false, autoStartWallpapers: Bool = true, autoPause: AutoPauseSettings = AutoPauseSettings(),
         playbackRate: Double = 1.0, scaling: VideoScaling = .fill, cacheLimitGB: Int = 10,
         notifyNewDrops: Bool = true, rotateLatestDrop: Bool = false, rotationInterval: RotationInterval = .hourly,
         setStaticFallback: Bool = true, catalogURLOverride: String = "",
-        dayNightSchedule: DayNightSchedule = .standard
+        dayNightSchedule: DayNightSchedule = .standard, watchDownloads: Bool = false
     ) {
         self.launchAtLogin = launchAtLogin
         self.autoStartWallpapers = autoStartWallpapers
@@ -67,6 +69,7 @@ public struct AppSettings: Codable, Hashable, Sendable {
         self.setStaticFallback = setStaticFallback
         self.catalogURLOverride = catalogURLOverride
         self.dayNightSchedule = dayNightSchedule
+        self.watchDownloads = watchDownloads
     }
 
     public init(from decoder: any Decoder) throws {
@@ -84,7 +87,8 @@ public struct AppSettings: Codable, Hashable, Sendable {
             rotationInterval: try c.decodeIfPresent(RotationInterval.self, forKey: .rotationInterval) ?? base.rotationInterval,
             setStaticFallback: try c.decodeIfPresent(Bool.self, forKey: .setStaticFallback) ?? base.setStaticFallback,
             catalogURLOverride: try c.decodeIfPresent(String.self, forKey: .catalogURLOverride) ?? base.catalogURLOverride,
-            dayNightSchedule: try c.decodeIfPresent(DayNightSchedule.self, forKey: .dayNightSchedule) ?? base.dayNightSchedule
+            dayNightSchedule: try c.decodeIfPresent(DayNightSchedule.self, forKey: .dayNightSchedule) ?? base.dayNightSchedule,
+            watchDownloads: try c.decodeIfPresent(Bool.self, forKey: .watchDownloads) ?? base.watchDownloads
         )
     }
 
