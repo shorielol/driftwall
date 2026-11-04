@@ -1,131 +1,46 @@
-from pathlib import Path
-
 from factories import make
 
-from driftwall_scraper.crawl import crawl_mixkit
-from driftwall_scraper.pexels import parse_search
-from driftwall_scraper.validate import find_dead
+from driftwall_scraper.discover import discover_space_videos, parse_detail, parse_listing
+from driftwall_scraper.validate import find_dead, is_allowed_url
 
-FIXTURES = Path(__file__).parent / "fixtures"
-LISTING = (FIXTURES / "mixkit_listing_night.html").read_text(encoding="utf-8")
-DETAIL_4K = (FIXTURES / "mixkit_detail_4k_free.html").read_text(encoding="utf-8")
-
-
-def fake_fetch(url: str) -> str:
-    if url.endswith("/free-stock-video/cozy/"):
-        return LISTING
-    if "-100417/" in url:
-        return DETAIL_4K
-    return "<html></html>"
+LISTING = '<a href="/videos/weic2411b/">x</a><a href="/videos/weic2411b/">dup</a><a href="/videos/potm2409a/">y</a>'
+PAN = "<title>Pan: Horsehead Nebula (NIRCam image) | ESA/Webb</title> cdn/archives/videos/ultra_hd/weic2411b.mp4"
+TALK = "<title>Webb science explained | ESA/Webb</title> archives/videos/ultra_hd/potm2409a.mp4"
+NO_4K = "<title>Zoom into a cluster | ESA/Webb</title> archives/videos/hd_1080p25_screen/x1.mp4"
 
 
-def test_crawl_mixkit_opens_every_card_and_assigns_category():
-    fetched: list[str] = []
-
-    def recording_fetch(url: str) -> str:
-        fetched.append(url)
-        return fake_fetch(url)
-
-    results = crawl_mixkit(recording_fetch, tags=[("Cozy", "cozy")], max_pages=2, delay_seconds=0)
-
-    assert [w.id for w in results] == ["mixkit-100417"]
-    assert results[0].category == "Cozy"
-    detail_fetches = [u for u in fetched if "/free-stock-video/cozy" not in u]
-    assert len(detail_fetches) == 24  # every card; resolution is decided on the detail page
+def test_parse_listing_dedupes_ids_in_order():
+    assert parse_listing(LISTING) == ["weic2411b", "potm2409a"]
 
 
-def test_crawl_mixkit_skips_lower_resolutions_once_category_has_enough_4k():
-    fetched: list[str] = []
-
-    def recording_fetch(url: str) -> str:
-        fetched.append(url)
-        return fake_fetch(url)
-
-    crawl_mixkit(recording_fetch, tags=[("Cozy", "cozy")], max_pages=1, delay_seconds=0, fill_below=1)
-
-    detail_fetches = [u for u in fetched if "/free-stock-video/cozy" not in u]
-    # The first card is 4K and fills the quota, so only the remaining 4K cards are opened.
-    assert len(detail_fetches) == 8
+def test_parse_detail_keeps_only_4k_pans_and_zooms():
+    assert parse_detail(PAN, "weic2411b") == {"id": "weic2411b", "title": "Pan: Horsehead Nebula (NIRCam image)"}
+    assert parse_detail(TALK, "potm2409a") is None
+    assert parse_detail(NO_4K, "x1") is None
 
 
-def test_crawl_mixkit_stops_paging_when_listing_is_empty():
-    fetched: list[str] = []
+def test_discover_builds_candidates_and_survives_errors(monkeypatch):
+    from driftwall_scraper import discover
 
-    def recording_fetch(url: str) -> str:
-        fetched.append(url)
-        return "<html></html>"
+    monkeypatch.setattr(discover, "REQUEST_DELAY_SECONDS", 0)
 
-    crawl_mixkit(recording_fetch, tags=[("Cozy", "cozy")], max_pages=5, delay_seconds=0)
+    def fake_fetch(url: str) -> str:
+        if "esahubble" in url:
+            raise TimeoutError("down")
+        if url.endswith("/videos/"):
+            return LISTING
+        return PAN if "weic2411b" in url else TALK
 
-    assert fetched == ["https://mixkit.co/free-stock-video/cozy/"]
-
-
-def test_crawl_mixkit_survives_fetch_errors():
-    def broken(url: str) -> str:
-        raise TimeoutError("boom")
-
-    assert crawl_mixkit(broken, tags=[("Cozy", "cozy")], max_pages=1, delay_seconds=0) == []
-
-
-PEXELS_JSON = {
-    "videos": [
-        {
-            "id": 111,
-            "url": "https://www.pexels.com/video/foggy-forest-111/",
-            "duration": 20,
-            "width": 3840,
-            "height": 2160,
-            "image": "https://images.pexels.com/videos/111/poster.jpeg",
-            "user": {"name": "Jane Doe"},
-            "video_files": [
-                {"quality": "hd", "width": 1280, "height": 720, "link": "https://videos.pexels.com/111-hd.mp4"},
-                {"quality": "uhd", "width": 3840, "height": 2160, "link": "https://videos.pexels.com/111-uhd.mp4"},
-            ],
-        },
-        {
-            "id": 222,
-            "url": "https://www.pexels.com/video/hd-only-222/",
-            "duration": 15,
-            "width": 1920,
-            "height": 1080,
-            "image": "https://images.pexels.com/videos/222/poster.jpeg",
-            "user": {"name": "John"},
-            "video_files": [
-                {"quality": "hd", "width": 1920, "height": 1080, "link": "https://videos.pexels.com/222-hd.mp4"}
-            ],
-        },
-        {
-            "id": 333,
-            "url": "https://www.pexels.com/video/vertical-333/",
-            "duration": 15,
-            "width": 2160,
-            "height": 3840,
-            "image": "https://images.pexels.com/videos/333/poster.jpeg",
-            "user": {"name": "V"},
-            "video_files": [
-                {"quality": "uhd", "width": 2160, "height": 3840, "link": "https://videos.pexels.com/333-uhd.mp4"}
-            ],
-        },
-    ]
-}
+    found = discover_space_videos(pages=1, fetch=fake_fetch)
+    assert [c["id"] for c in found] == ["weic2411b"]
+    assert found[0]["video4k"] == "https://cdn.esawebb.org/archives/videos/ultra_hd/weic2411b.mp4"
+    assert found[0]["credit"] == "ESA/Webb"
 
 
-def test_parse_pexels_keeps_landscape_1080p_and_up():
-    results = parse_search(PEXELS_JSON, category="Nature", rank_offset=0)
-
-    assert [w.id for w in results] == ["pexels-111", "pexels-222"]
-    item = results[0]
-    assert item.video_url.endswith("111-uhd.mp4")
-    assert item.preview_url.endswith("111-hd.mp4")
-    assert item.author == "Jane Doe"
-    assert item.width == 3840 and item.height == 2160
-    assert item.title == "Foggy Forest"
-    assert item.license_name == "Pexels License"
-
-
-def test_parse_pexels_tolerates_malformed_payload():
-    assert parse_search({"videos": [{"id": 1}]}, category="Nature", rank_offset=0) == []
-    assert parse_search({}, category="Nature", rank_offset=0) == []
+def test_release_asset_hosts_are_allowed():
+    assert is_allowed_url("https://github.com/shorielol/driftwall/releases/download/loops-v1/a.mp4")
+    assert is_allowed_url("https://objects.githubusercontent.com/x")
+    assert not is_allowed_url("https://assets.mixkit.co/a.mp4")
 
 
 def test_find_dead_reports_any_failing_url():
@@ -154,16 +69,8 @@ def test_check_url_classifies_404_dead_and_timeouts_unknown(monkeypatch):
     monkeypatch.setattr(validate, "_open", fake_open)
     monkeypatch.setattr(validate, "RETRY_DELAY_SECONDS", 0)
 
-    assert validate.check_url("https://assets.mixkit.co/gone.mp4") is False
-    assert validate.check_url("https://assets.mixkit.co/busy.mp4") is None
-    assert validate.check_url("https://assets.mixkit.co/slow.mp4") is None
+    assert validate.check_url("https://github.com/gone.mp4") is False
+    assert validate.check_url("https://github.com/busy.mp4") is None
+    assert validate.check_url("https://github.com/slow.mp4") is None
     assert validate.check_url("http://insecure.example/a.mp4") is False
     assert validate.check_url("https://evil.example/a.mp4") is False
-
-
-def test_pexels_people_clips_and_bad_types_are_skipped():
-    payload = {"videos": [
-        {**PEXELS_JSON["videos"][0], "id": 5, "url": "https://www.pexels.com/video/woman-walking-5/"},
-        {**PEXELS_JSON["videos"][0], "id": 6, "user": None, "width": "wide"},
-    ]}
-    assert parse_search(payload, category="Nature", rank_offset=0) == []

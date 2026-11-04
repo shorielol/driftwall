@@ -135,11 +135,11 @@ struct CatalogQueryTests {
 
 @Suite("Catalog hardening")
 struct CatalogHardeningTests {
-    private func entry(id: String, host: String = "assets.mixkit.co", license: String = "https://mixkit.co/license/#videoFree",
+    private func entry(id: String, host: String = "github.com", license: String = "https://creativecommons.org/licenses/by/4.0/",
                        title: String = "Ok", duration: Int = 20, width: Int = 3840, height: Int = 2160) -> String {
         """
         {"id":"\(id)","title":"\(title)","description":"","category":"Nature","tags":[],"source":"mixkit",
-         "sourcePageUrl":"https://mixkit.co/free-stock-video/x-1/","previewUrl":"https://\(host)/p-720.mp4",
+         "sourcePageUrl":"https://studio.blender.org/free-stock-video/x-1/","previewUrl":"https://\(host)/p-720.mp4",
          "videoUrl":"https://\(host)/v-2160.mp4","posterUrl":"https://\(host)/p.jpg","author":"Mixkit",
          "license":"Free","licenseUrl":"\(license)","durationSeconds":\(duration),"width":\(width),"height":\(height),
          "fileSizeMB":10,"uploadedAt":"","sourceRank":0,"addedInDrop":"d"}
@@ -187,12 +187,12 @@ struct NewBadgeTests {
 struct ResolutionPolicyTests {
     private func wallpaper(_ width: Int, _ height: Int) -> Wallpaper {
         Wallpaper(
-            id: "w", title: "w", category: "Anime", source: "pixabay",
-            sourcePageURL: URL(string: "https://pixabay.com/videos/w-1/")!,
-            previewURL: URL(string: "https://cdn.pixabay.com/p.mp4")!,
-            videoURL: URL(string: "https://cdn.pixabay.com/v.mp4")!,
-            posterURL: URL(string: "https://cdn.pixabay.com/p.jpg")!,
-            author: "a", license: "Pixabay Content License", durationSeconds: 10, width: width, height: height
+            id: "w", title: "w", category: "Anime", source: "esa",
+            sourcePageURL: URL(string: "https://esawebb.org/videos/w1/")!,
+            previewURL: URL(string: "https://github.com/p.mp4")!,
+            videoURL: URL(string: "https://github.com/v.mp4")!,
+            posterURL: URL(string: "https://github.com/p.jpg")!,
+            author: "a", license: "CC BY 4.0", durationSeconds: 10, width: width, height: height
         )
     }
 
@@ -203,7 +203,11 @@ struct ResolutionPolicyTests {
         #expect(item.meetsMinimumResolution == allowed)
     }
 
-    @Test func `pixabay media hosts are allowed`() {
+    @Test func `release media hosts are allowed`() {
         #expect(wallpaper(3840, 2160).hasSecureURLs)
+    }
+
+    @Test func `source names read naturally`() {
+        #expect(wallpaper(3840, 2160).sourceName == "ESA/Webb")
     }
 }

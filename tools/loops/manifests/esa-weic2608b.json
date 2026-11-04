@@ -1,0 +1,28 @@
+{
+  "file": "esa-weic2608b.mp4",
+  "url": "https://cdn.esawebb.org/archives/videos/ultra_hd/weic2608b.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esawebb.org/videos/weic2608b/",
+  "author": "ESA/Webb, NASA & CSA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-weic2608b",
+      "title": "Cosmic Shoreline",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 27.0,
+      "rank": 29,
+      "posterAt": 13.5,
+      "description": "A ragged ridge of glowing dust along a galaxy's edge.",
+      "tags": [
+        "space",
+        "galaxy",
+        "webb",
+        "dust"
+      ]
+    }
+  ]
+}

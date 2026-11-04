@@ -8,9 +8,7 @@ from driftwall_scraper.catalog import (
     prune,
     should_drop,
 )
-from driftwall_scraper.categories import categorize
 from driftwall_scraper.models import Catalog
-
 
 ANCHOR = date(2026, 11, 2)  # a Monday
 
@@ -95,13 +93,6 @@ def test_prune_removes_dead_entries_everywhere():
 def test_catalog_json_roundtrip():
     catalog, _ = build_drop(Catalog.empty(), [make("a")], seen=frozenset(), today=ANCHOR, size=5)
     assert Catalog.from_json(catalog.to_json()) == catalog
-
-
-def test_categorize_uses_query_tag_then_item_tags():
-    assert categorize(query_tag="galaxy", item_tags=()) == "Space"
-    assert categorize(query_tag="unknown", item_tags=("zzz", "city")) == "City"
-    assert categorize(query_tag="unknown", item_tags=("city", "cat")) == "Cats"  # specific beats generic
-    assert categorize(query_tag="unknown", item_tags=("zzz",)) == "Abstract"
 
 
 def test_drop_week_start_snaps_to_anchor_weekday():

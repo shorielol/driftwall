@@ -24,15 +24,10 @@ RETRY_DELAY_SECONDS = 2.0
 DEAD_STATUSES = frozenset({404, 410})
 HEAD_REFUSED_STATUSES = frozenset({403, 405, 501})
 ALLOWED_HOSTS = frozenset({
-    "mixkit.co",
-    "assets.mixkit.co",
-    "www.pexels.com",
-    "videos.pexels.com",
-    "images.pexels.com",
-    "pixabay.com",
-    "cdn.pixabay.com",
+    # Loops are GitHub Release assets; downloads redirect to GitHub's asset CDN.
     "github.com",
-    "studio.blender.org",
+    "objects.githubusercontent.com",
+    "release-assets.githubusercontent.com",
 })
 
 
@@ -54,7 +49,7 @@ _OPENER = urllib.request.build_opener(_SafeRedirects)
 
 
 def _open(request: urllib.request.Request) -> int:
-    with _OPENER.open(request, timeout=TIMEOUT_SECONDS) as response:  # noqa: S310 allow-listed https only
+    with _OPENER.open(request, timeout=TIMEOUT_SECONDS) as response:
         return int(response.status)
 
 
@@ -70,7 +65,7 @@ def _probe(url: str) -> bool | None:
             if method == "HEAD" and error.code in HEAD_REFUSED_STATUSES:
                 continue
             return None
-        except Exception as error:  # network boundary: timeouts, DNS, resets
+        except Exception as error:  # noqa: BLE001 network boundary: timeouts, DNS, resets
             log.debug("%s %s failed: %s", method, url, error)
             return None
     return None

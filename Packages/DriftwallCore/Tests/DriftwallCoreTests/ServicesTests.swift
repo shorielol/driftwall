@@ -12,7 +12,7 @@ private func tempDirectory() throws -> URL {
 private func sampleWallpaper(_ id: String, video: String = "https://cdn.example/v.mp4") -> Wallpaper {
     Wallpaper(
         id: id, title: id, category: "Nature", source: "mixkit",
-        sourcePageURL: URL(string: "https://mixkit.co/x-1/")!,
+        sourcePageURL: URL(string: "https://studio.blender.org/x-1/")!,
         previewURL: URL(string: "https://cdn.example/p.mp4")!,
         videoURL: URL(string: video)!,
         posterURL: URL(string: "https://cdn.example/p.jpg")!,

@@ -1,0 +1,29 @@
+{
+  "file": "esa-heic1914b.mp4",
+  "url": "https://cdn.esahubble.org/archives/videos/ultra_hd/heic1914b.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esahubble.org/videos/heic1914b/",
+  "author": "ESA/Hubble & NASA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-heic1914b",
+      "title": "Great Red Spot",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 37.0,
+      "rank": 36,
+      "posterAt": 18.5,
+      "description": "A slow approach to Jupiter's Great Red Spot.",
+      "tags": [
+        "space",
+        "planet",
+        "jupiter",
+        "hubble",
+        "warm"
+      ]
+    }
+  ]
+}

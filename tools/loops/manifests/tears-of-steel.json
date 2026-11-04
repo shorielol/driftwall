@@ -1,0 +1,15 @@
+{
+  "file": "tos-4k.webm",
+  "url": "https://commons.wikimedia.org/wiki/File:Tears_of_Steel_in_4k_-_Official_Blender_Foundation_release.webm",
+  "source": "blender",
+  "sourcePageUrl": "https://studio.blender.org/projects/tears-of-steel/",
+  "author": "Blender Foundation · Tears of Steel",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+  "category": "Sci-fi",
+  "segments": [
+    {"slug": "tos-drowned-amsterdam", "title": "Drowned Amsterdam", "mode": "crossfade", "start": 70.2, "duration": 3.4, "rank": 13,
+     "description": "An airship drifts past a broken church spire over a ruined, misty Amsterdam.",
+     "tags": ["sci-fi", "city", "dystopia", "airship", "fog"]}
+  ]
+}

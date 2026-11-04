@@ -1,0 +1,21 @@
+{
+  "file": "charge-4k.webm",
+  "url": "https://commons.wikimedia.org/wiki/File:Charge_-_Blender_Open_Movie-full_movie.webm",
+  "source": "blender",
+  "sourcePageUrl": "https://studio.blender.org/projects/charge/",
+  "author": "Blender Studio · Charge",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Sci-fi",
+  "segments": [
+    {"slug": "charge-ash-mesa", "title": "Ash Mesa", "mode": "pingpong", "start": 25.6, "duration": 3.0, "rank": 10,
+     "description": "A ruined fortress looms over grey hills in drifting fog.",
+     "tags": ["sci-fi", "fog", "dystopia", "moody", "landscape"], "category": "Sci-fi"},
+    {"slug": "charge-lantern-front", "title": "Lantern at the Front", "mode": "crossfade", "start": 141.0, "duration": 6.0, "rank": 11,
+     "description": "A lone figure with a green lantern stands before a burning war machine at night.",
+     "tags": ["sci-fi", "night", "fire", "dark", "cinematic"], "category": "Sci-fi"},
+    {"slug": "charge-hearth", "title": "Hearth", "mode": "crossfade", "start": 184.0, "duration": 2.6, "rank": 12,
+     "description": "Weathered hands warm over a crackling fire.",
+     "tags": ["cozy", "fire", "warm", "night", "cinematic"], "category": "Animated"}
+  ]
+}

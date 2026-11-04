@@ -1,0 +1,28 @@
+{
+  "file": "esa-weic2417a.mp4",
+  "url": "https://cdn.esawebb.org/archives/videos/ultra_hd/weic2417a.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esawebb.org/videos/weic2417a/",
+  "author": "ESA/Webb, NASA & CSA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-weic2417a",
+      "title": "Crab Nebula",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 27.0,
+      "rank": 23,
+      "posterAt": 13.5,
+      "description": "Filaments of a shattered star, a thousand years after the supernova.",
+      "tags": [
+        "space",
+        "nebula",
+        "supernova",
+        "webb"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "file": "sintel-4k.webm",
+  "url": "https://commons.wikimedia.org/wiki/File:Sintel_movie_4K.webm",
+  "source": "blender",
+  "sourcePageUrl": "https://studio.blender.org/projects/sintel/",
+  "author": "Blender Foundation \u00b7 Sintel",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+  "category": "Fantasy",
+  "segments": [
+    {
+      "slug": "sintel-frozen-ridge",
+      "title": "Frozen Ridge",
+      "mode": "pingpong",
+      "start": 24.2,
+      "duration": 3.4,
+      "rank": 5,
+      "description": "The camera glides along an ice-blue cliff in a silent, snowbound range.",
+      "tags": [
+        "fantasy",
+        "snow",
+        "mountains",
+        "winter",
+        "minimal"
+      ]
+    },
+    {
+      "slug": "sintel-dune-sea",
+      "title": "Dune Sea",
+      "mode": "pingpong",
+      "start": 369.2,
+      "duration": 3.6,
+      "rank": 6,
+      "description": "A lone traveller crosses golden dunes under a pale sky.",
+      "tags": [
+        "fantasy",
+        "desert",
+        "dunes",
+        "warm",
+        "minimal"
+      ]
+    }
+  ]
+}

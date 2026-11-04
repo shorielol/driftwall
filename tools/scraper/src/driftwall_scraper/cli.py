@@ -1,4 +1,8 @@
-"""Command line entrypoint: `drop` builds a new 3-week drop, `validate` checks published links."""
+"""Command line entrypoint.
+
+`drop` publishes the next 3-week drop from the curated loop backlog (catalog/loops.json),
+`validate` checks every published link, `discover` lists new 4K space videos worth curating.
+"""
 
 from __future__ import annotations
 
@@ -8,23 +12,19 @@ import logging
 import os
 import sys
 import tempfile
-from dataclasses import replace
 from datetime import date
 from pathlib import Path
 from typing import Any
 
 from .catalog import DEFAULT_DROP_SIZE, build_drop, drop_week_start, prune, refill_featured, should_drop
-from .categories import PEXELS_QUERIES, PIXABAY_QUERIES, crawl_tags
-from .crawl import crawl_mixkit, scrapling_fetch
 from .models import Catalog, Drop, Wallpaper
-from .pexels import search_pexels
-from .pixabay import search_pixabay
 from .validate import check_links
 
 log = logging.getLogger("driftwall_scraper")
 
 DEFAULT_ANCHOR = date(2026, 11, 2)
-DEFAULT_INITIAL_SIZE = 160
+DEFAULT_INITIAL_SIZE = 24
+BACKLOG_FILE = "loops.json"
 # If more than this share of published entries look dead at once, something is wrong upstream:
 # refuse to prune rather than wipe the catalog.
 MAX_DEAD_FRACTION = 0.3
@@ -81,41 +81,19 @@ def _publish(catalog_dir: Path, catalog: Catalog, seen: frozenset[str], drops: l
     _write_json(catalog_dir / "catalog.json", catalog.to_json())
 
 
-def _gather_candidates(args: argparse.Namespace) -> list[Wallpaper]:
-    candidates = crawl_mixkit(scrapling_fetch, crawl_tags(), max_pages=args.max_pages, delay_seconds=args.delay)
-    api_key = os.environ.get("PEXELS_API_KEY", "").strip()
-    if api_key:
-        for offset, (category, query) in enumerate(PEXELS_QUERIES):
-            candidates.extend(search_pexels(query, category, api_key, rank_offset=offset * 10))
-    else:
-        log.info("PEXELS_API_KEY not set; skipping Pexels source")
-    pixabay_key = os.environ.get("PIXABAY_API_KEY", "").strip()
-    if pixabay_key:
-        for offset, (category, query) in enumerate(PIXABAY_QUERIES):
-            candidates.extend(search_pixabay(query, category, pixabay_key, rank_offset=offset * 10))
-    else:
-        log.info("PIXABAY_API_KEY not set; skipping Pixabay source (anime-style loops)")
-    log.info("gathered %d 4K candidates", len(candidates))
-    return candidates
+def _backlog(catalog_dir: Path) -> list[Wallpaper]:
+    """Curated loops (rendered by tools/loops/make_loops.py) waiting to be published."""
+    items = _read_json(catalog_dir / BACKLOG_FILE, [])
+    if not isinstance(items, list):
+        raise CatalogError(f"{BACKLOG_FILE} must be a JSON list")
+    return [Wallpaper.from_json(item) for item in items]
 
 
-def _merge_pinned(catalog: Catalog, catalog_dir: Path) -> Catalog:
-    """Add open-licence film loops (catalog/open-films.json) once their release files are live."""
-    path = catalog_dir / "open-films.json"
-    if not path.exists():
-        return catalog
-    pinned = [Wallpaper.from_json(item) for item in _read_json(path, [])]
-    existing = {w.id for w in catalog.wallpapers}
-    fresh = [w for w in pinned if w.id not in existing]
-    if not fresh:
-        return catalog
-    dead, unknown = check_links(fresh)
-    live = tuple(w for w in fresh if w.id not in dead | unknown)
-    if not live:
-        log.info("open-film loops not reachable yet; publish the films release first")
-        return catalog
-    log.info("adding %d open-film loops", len(live))
-    return replace(catalog, wallpapers=live + catalog.wallpapers)
+def _live(candidates: list[Wallpaper], skip_check: bool) -> list[Wallpaper]:
+    if skip_check or not candidates:
+        return candidates
+    dead, unknown = check_links(candidates)
+    return [w for w in candidates if w.id not in dead | unknown]
 
 
 def _prune_dead(catalog: Catalog) -> Catalog:
@@ -143,20 +121,18 @@ def run_drop(args: argparse.Namespace) -> int:
         _set_github_output("dropped", "false")
         return 0
 
-    pruned = _merge_pinned(_prune_dead(catalog), catalog_dir)
-    candidates = _gather_candidates(args)
-    if not candidates:
-        raise CatalogError("the crawl returned no candidates; the source may have changed")
+    pruned = catalog if args.skip_link_check else _prune_dead(catalog)
+    candidates = _backlog(catalog_dir)
+    if not candidates and not pruned.wallpapers:
+        raise CatalogError(f"{BACKLOG_FILE} is empty; render loops with tools/loops/make_loops.py first")
 
     excluded = seen | {w.id for w in pruned.wallpapers}
-    fresh = [w for w in candidates if w.id not in excluded]
-    dead_fresh, unknown_fresh = check_links(fresh)
-    fresh = [w for w in fresh if w.id not in dead_fresh | unknown_fresh]
+    fresh = _live([w for w in candidates if w.id not in excluded], args.skip_link_check)
 
     size = args.initial_size if not pruned.wallpapers else args.size
     updated, new_seen = build_drop(pruned, fresh, seen, today=drop_day, size=size)
     if updated is pruned:
-        log.warning("no fresh wallpapers available; keeping the previous drop")
+        log.warning("backlog has no unpublished, reachable loops; keeping the previous drop")
         if pruned is not catalog:
             _publish(catalog_dir, pruned, seen | {w.id for w in pruned.wallpapers}, list(pruned.drops))
         _set_github_output("dropped", "false")
@@ -170,23 +146,23 @@ def run_drop(args: argparse.Namespace) -> int:
     return 0
 
 
-def run_curate(args: argparse.Namespace) -> int:
-    """Re-apply the current content filters to a published catalog without re-crawling."""
-    from .mixkit import is_wallpaper_worthy
+def run_discover(args: argparse.Namespace) -> int:
+    """List new 4K ESA/Webb and ESA/Hubble pans and zooms that are not in any manifest yet."""
+    from .discover import discover_space_videos
 
-    catalog_dir = Path(args.catalog_dir)
-    catalog, seen = _load(catalog_dir)
-    rejected = {
-        w.id for w in catalog.wallpapers
-        if w.source == "mixkit" and (w.category == "Anime" or not is_wallpaper_worthy(w.title, "", w.tags))
-    }
-    if not rejected:
-        log.info("catalog already satisfies the filters (%d entries)", len(catalog.wallpapers))
-        return 0
-    curated = refill_featured(prune(catalog, rejected))
-    _publish(catalog_dir, curated, seen, list(curated.drops))
-    log.info("removed %d entries; %d remain", len(rejected), len(curated.wallpapers))
+    known = {seg_id for seg_id in _manifest_source_ids(Path(args.manifests))}
+    found = [c for c in discover_space_videos(pages=args.pages) if c["id"] not in known]
+    _write_json(Path(args.catalog_dir) / "candidates.json", found)
+    log.info("%d new candidates written to candidates.json for review", len(found))
     return 0
+
+
+def _manifest_source_ids(folder: Path) -> list[str]:
+    ids = []
+    for path in sorted(folder.glob("*.json")):
+        manifest = _read_json(path, {})
+        ids.append(Path(str(manifest.get("file", ""))).stem.removeprefix("esa-"))
+    return ids
 
 
 def run_validate(args: argparse.Namespace) -> int:
@@ -222,12 +198,14 @@ def build_parser() -> argparse.ArgumentParser:
     drop.add_argument("--anchor", default=DEFAULT_ANCHOR.isoformat(), help="first drop day (YYYY-MM-DD)")
     drop.add_argument("--size", type=_positive_int, default=DEFAULT_DROP_SIZE)
     drop.add_argument("--initial-size", type=_positive_int, default=DEFAULT_INITIAL_SIZE)
-    drop.add_argument("--max-pages", type=_positive_int, default=4)
-    drop.add_argument("--delay", type=float, default=1.0, help="seconds between requests")
+    drop.add_argument("--skip-link-check", action="store_true",
+                      help="trust the backlog without checking links (seeding before the release is uploaded)")
     drop.set_defaults(handler=run_drop)
 
-    curate = sub.add_parser("curate", help="re-apply content filters to the existing catalog")
-    curate.set_defaults(handler=run_curate)
+    discover = sub.add_parser("discover", help="list new 4K space videos worth turning into loops")
+    discover.add_argument("--manifests", default="tools/loops/manifests", help="folder of loop manifests")
+    discover.add_argument("--pages", type=_positive_int, default=2)
+    discover.set_defaults(handler=run_discover)
 
     validate = sub.add_parser("validate", help="check every published link")
     validate.add_argument("--prune", action="store_true", help="remove dead entries instead of failing")

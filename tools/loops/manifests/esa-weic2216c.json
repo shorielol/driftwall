@@ -1,0 +1,29 @@
+{
+  "file": "esa-weic2216c.mp4",
+  "url": "https://cdn.esawebb.org/archives/videos/ultra_hd/weic2216c.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esawebb.org/videos/weic2216c/",
+  "author": "ESA/Webb, NASA & CSA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-weic2216c",
+      "title": "Pillars of Creation",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 42.0,
+      "rank": 21,
+      "posterAt": 21.0,
+      "description": "Towering columns of gas and dust where new stars are forming.",
+      "tags": [
+        "space",
+        "nebula",
+        "pillars",
+        "webb",
+        "iconic"
+      ]
+    }
+  ]
+}

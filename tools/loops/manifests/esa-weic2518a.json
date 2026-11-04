@@ -1,0 +1,28 @@
+{
+  "file": "esa-weic2518a.mp4",
+  "url": "https://cdn.esawebb.org/archives/videos/ultra_hd/weic2518a.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esawebb.org/videos/weic2518a/",
+  "author": "ESA/Webb, NASA & CSA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-weic2518a",
+      "title": "Pismis 24",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 27.0,
+      "rank": 27,
+      "posterAt": 13.5,
+      "description": "Stellar cliffs and bright stars in a nearby star-forming region.",
+      "tags": [
+        "space",
+        "nebula",
+        "webb",
+        "orange"
+      ]
+    }
+  ]
+}

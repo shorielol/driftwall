@@ -1,0 +1,30 @@
+{
+  "file": "sintel-snowdrops-region.mov",
+  "url": "https://commons.wikimedia.org/wiki/File:Sintel_movie_4K.webm",
+  "source": "blender",
+  "sourcePageUrl": "https://studio.blender.org/projects/sintel/",
+  "author": "Blender Foundation \u00b7 Sintel",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+  "category": "Fantasy",
+  "prepare": "The 4K webm has irregular timestamps near the end. Extract the shot at a constant frame rate first: ffmpeg -ss 715 -i sintel-4k.webm -t 45 -vf fps=24 -c:v prores_ks -profile:v 1 -an sintel-snowdrops-region.mov",
+  "segments": [
+    {
+      "slug": "sintel-snowdrops",
+      "title": "Snowdrops",
+      "mode": "crossfade",
+      "start": 22.6,
+      "duration": 4.0,
+      "rank": 8,
+      "cropX": 0.8,
+      "description": "Snowdrops nod in the wind on a quiet hillside at golden hour.",
+      "tags": [
+        "fantasy",
+        "flowers",
+        "calm",
+        "golden hour",
+        "anime-style"
+      ]
+    }
+  ]
+}

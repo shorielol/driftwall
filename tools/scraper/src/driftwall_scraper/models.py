@@ -33,7 +33,7 @@ class Wallpaper:
     source_rank: int = 0
     added_in_drop: str = ""
 
-    def with_changes(self, **changes: Any) -> "Wallpaper":
+    def with_changes(self, **changes: Any) -> Wallpaper:
         return replace(self, **changes)
 
     def to_json(self) -> dict[str, Any]:
@@ -61,7 +61,7 @@ class Wallpaper:
         }
 
     @staticmethod
-    def from_json(data: dict[str, Any]) -> "Wallpaper":
+    def from_json(data: dict[str, Any]) -> Wallpaper:
         return Wallpaper(
             id=str(data["id"]),
             title=str(data["title"]),
@@ -96,7 +96,7 @@ class Drop:
         return {"dropId": self.drop_id, "date": self.date, "ids": list(self.ids)}
 
     @staticmethod
-    def from_json(data: dict[str, Any]) -> "Drop":
+    def from_json(data: dict[str, Any]) -> Drop:
         return Drop(drop_id=str(data["dropId"]), date=str(data["date"]), ids=tuple(data["ids"]))
 
 
@@ -122,7 +122,7 @@ class Catalog:
         }
 
     @staticmethod
-    def from_json(data: dict[str, Any]) -> "Catalog":
+    def from_json(data: dict[str, Any]) -> Catalog:
         return Catalog(
             schema_version=int(data["schemaVersion"]),
             generated_at=str(data["generatedAt"]),
@@ -134,7 +134,7 @@ class Catalog:
         )
 
     @staticmethod
-    def empty() -> "Catalog":
+    def empty() -> Catalog:
         return Catalog(
             schema_version=SCHEMA_VERSION,
             generated_at="",

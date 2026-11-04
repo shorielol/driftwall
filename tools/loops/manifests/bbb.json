@@ -1,0 +1,42 @@
+{
+  "file": "bbb-sunflower-2160p30.mp4",
+  "url": "https://download.blender.org/demo/movies/BBB/bbb_sunflower_2160p_30fps_normal.mp4.zip",
+  "source": "blender",
+  "sourcePageUrl": "https://studio.blender.org/projects/big-buck-bunny/",
+  "author": "Blender Foundation \u00b7 Big Buck Bunny",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+  "category": "Animated",
+  "segments": [
+    {
+      "slug": "bbb-cotton-candy-sky",
+      "title": "Cotton Candy Sky",
+      "start": 7.5,
+      "duration": 5.5,
+      "description": "Pastel clouds roll over a sunny meadow at first light.",
+      "tags": [
+        "animated",
+        "sky",
+        "clouds",
+        "pastel"
+      ],
+      "rank": 1,
+      "mode": "crossfade"
+    },
+    {
+      "slug": "bbb-burrow-tree",
+      "title": "The Burrow Tree",
+      "start": 28.5,
+      "duration": 10.0,
+      "description": "Dappled sunlight drifts across an old tree and its mossy burrow.",
+      "tags": [
+        "animated",
+        "forest",
+        "tree",
+        "sunlight"
+      ],
+      "rank": 2,
+      "mode": "crossfade"
+    }
+  ]
+}

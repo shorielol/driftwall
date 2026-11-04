@@ -1,0 +1,28 @@
+{
+  "file": "esa-heic1608c.mp4",
+  "url": "https://cdn.esahubble.org/archives/videos/ultra_hd/heic1608c.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esahubble.org/videos/heic1608c/",
+  "author": "ESA/Hubble & NASA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-heic1608c",
+      "title": "Bubble Nebula",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 47.0,
+      "rank": 34,
+      "posterAt": 23.5,
+      "description": "A vast bubble blown by a single hot star.",
+      "tags": [
+        "space",
+        "nebula",
+        "hubble",
+        "blue"
+      ]
+    }
+  ]
+}

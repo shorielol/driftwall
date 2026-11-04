@@ -1,0 +1,27 @@
+{
+  "file": "esa-potw2531a.mp4",
+  "url": "https://cdn.esahubble.org/archives/videos/ultra_hd/potw2531a.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esahubble.org/videos/potw2531a/",
+  "author": "ESA/Hubble & NASA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-potw2531a",
+      "title": "Tarantula",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 27.0,
+      "rank": 35,
+      "posterAt": 13.5,
+      "description": "Wisps of gas in the Tarantula Nebula, the Milky Way's busiest neighbour.",
+      "tags": [
+        "space",
+        "nebula",
+        "hubble"
+      ]
+    }
+  ]
+}

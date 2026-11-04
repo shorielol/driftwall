@@ -1,4 +1,4 @@
-.PHONY: project build run test test-core test-scraper release catalog films clean
+.PHONY: project build run test test-core test-scraper release catalog loops discover clean
 
 DERIVED := .build/xcode
 APP := $(DERIVED)/Build/Products/Release/Driftwall.app
@@ -24,9 +24,13 @@ test-scraper:
 catalog:
 	uv run --project tools/scraper python -m driftwall_scraper --catalog-dir catalog drop --force
 
-# Cut CC-BY film loops: make films SOURCE=/path/to/film.mp4 SEGMENTS=tools/loops/segments.bbb.json
-films:
-	python3 tools/loops/make_loops.py --source "$(SOURCE)" --segments "$(SEGMENTS)" --out dist/films
+# Render seamless 4K loops from the manifests (sources go in dist/sources): make loops
+loops:
+	python3 tools/loops/make_loops.py tools/loops/manifests/*.json
+
+# List new 4K ESA/Webb and ESA/Hubble pans worth curating into manifests
+discover:
+	uv run --project tools/scraper python -m driftwall_scraper --catalog-dir catalog discover
 
 release: build
 	mkdir -p dist

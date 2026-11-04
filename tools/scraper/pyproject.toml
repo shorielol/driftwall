@@ -1,7 +1,7 @@
 [project]
 name = "driftwall-scraper"
 version = "0.1.0"
-description = "Add your description here"
+description = "Catalog tools for Driftwall: drop builder, link checker and discovery of new space loops"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

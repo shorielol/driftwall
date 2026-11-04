@@ -1,15 +1,16 @@
-# Driftwall catalog scraper
+# Driftwall catalog tools
 
-Builds `catalog/catalog.json` for the Driftwall app.
-
-- **Sources:** Mixkit public tag pages, crawled with [scrapling](https://github.com/D4Vinci/Scrapling) (robots.txt allows it; about 1 request per second). Optionally the official Pixabay and Pexels Videos APIs when `PIXABAY_API_KEY` / `PEXELS_API_KEY` are set; Pixabay is the main source of anime-style loops.
-- **Kept only if:** free license, landscape and at least 1080p (the highest rendition is used; 4K is preferred and lower resolutions only fill categories short on 4K), at least 6 s long, and scenery rather than people or office close-ups (anime is exempt from the people filter).
+Builds `catalog/catalog.json` for the Driftwall app from- **Backlog:** `catalog/loops.json`, written by `tools/loops/make_loops.py` from the shot manifests in `tools/loops/manifests/`. Only redistributable sources are used (NASA, ESA/Webb, ESA/Hubble, Blender open movies).
+- **Drops:** each drop releases the next loops whose GitHub Release files are reachable (`--skip-link-check` trusts the backlog, for seeding before the release exists) and rotates the featured row.
+- **Discovery:** `discover` uses [scrapling](https://github.com/D4Vinci/Scrapling) to list new 4K ESA/Webb and ESA/Hubble pans and zooms into `catalog/candidates.json` for a person to review.
+pt from the people filter).
 - **Cadence:** every third Monday (anchor `2026-11-02`), driven by `.github/workflows/catalog-drop.yml`.
 
 ```bash
 uv run pytest -q                                                  # tests
 uv run python -m driftwall_scraper --catalog-dir ../../catalog drop --force    # build a drop now
 uv run python -m driftwall_scraper --catalog-dir ../../catalog validate        # check every link
+uv run python -m driftwall_scraper --catalog-dir ../../catalog discover --manifests ../loops/manifests  # new candidates
 ```
 
 Files written:

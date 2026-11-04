@@ -10,7 +10,7 @@ from datetime import UTC, date, datetime, timedelta
 from .models import SCHEMA_VERSION, Catalog, Drop, Wallpaper
 
 DROP_INTERVAL_DAYS = 21
-DEFAULT_DROP_SIZE = 40
+DEFAULT_DROP_SIZE = 8
 DEFAULT_FEATURED_COUNT = 6
 
 

@@ -1,0 +1,15 @@
+{
+  "file": "nasa-bh-orbit.mp4",
+  "url": "https://svs.gsfc.nasa.gov/vis/a010000/a014600/a014619/2-Orbiting_a_black_hole-4K.mp4",
+  "source": "nasa",
+  "sourcePageUrl": "https://svs.gsfc.nasa.gov/14619",
+  "author": "NASA Goddard Space Flight Center · Jeremy Schnittman",
+  "license": "Public domain (NASA)",
+  "licenseUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+  "category": "Space",
+  "segments": [
+    {"slug": "nasa-black-hole-orbit", "title": "Event Horizon", "mode": "crossfade", "start": 0.5, "duration": 12.5, "rank": 1,
+     "description": "A camera circles a black hole while its glowing disk bends light into a halo.",
+     "tags": ["space", "black hole", "gargantua", "dark", "simulation"]}
+  ]
+}

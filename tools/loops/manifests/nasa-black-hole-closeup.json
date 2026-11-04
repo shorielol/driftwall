@@ -1,0 +1,15 @@
+{
+  "file": "nasa-bh-closeup.mp4",
+  "url": "https://svs.gsfc.nasa.gov/vis/a010000/a014600/a014619/4-Black_hole_up_close-4K.mp4",
+  "source": "nasa",
+  "sourcePageUrl": "https://svs.gsfc.nasa.gov/14619",
+  "author": "NASA Goddard Space Flight Center · Jeremy Schnittman",
+  "license": "Public domain (NASA)",
+  "licenseUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+  "category": "Space",
+  "segments": [
+    {"slug": "nasa-black-hole-closeup", "title": "Photon Ring", "mode": "crossfade", "start": 0.5, "duration": 12.5, "rank": 4,
+     "description": "Up close to the shadow of a black hole, its disk streams around the edge.",
+     "tags": ["space", "black hole", "minimal", "monochrome", "simulation"]}
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "file": "esa-weic2207c.mp4",
+  "url": "https://cdn.esawebb.org/archives/videos/ultra_hd/weic2207c.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esawebb.org/videos/weic2207c/",
+  "author": "ESA/Webb, NASA & CSA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-weic2207c",
+      "title": "Southern Ring",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 27.0,
+      "rank": 25,
+      "posterAt": 13.5,
+      "description": "A dying star sheds shimmering shells of gas.",
+      "tags": [
+        "space",
+        "nebula",
+        "ring",
+        "webb",
+        "blue"
+      ]
+    }
+  ]
+}

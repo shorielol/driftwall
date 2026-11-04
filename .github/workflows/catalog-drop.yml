@@ -1,7 +1,9 @@
 name: Catalog drop
 
-# Runs every Monday; the scraper only publishes on every third week, so a fresh
-# drop lands every 3 weeks. Run manually with "force" to drop now.
+# Runs every Monday; the drop builder only publishes on every third week, so a fresh
+# drop lands every 3 weeks. Each drop releases the next loops from catalog/loops.json
+# (rendered locally with tools/loops and uploaded as a GitHub Release) and rotates the
+# featured row. Run manually with "force" to drop now.
 on:
   schedule:
     - cron: "0 6 * * 1"
@@ -21,7 +23,7 @@ concurrency:
 
 jobs:
   build:
-    # Scraping runs third-party code against untrusted HTML, so it gets a read-only token.
+    # Link checks talk to the network, so this job only gets a read-only token.
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
@@ -36,8 +38,6 @@ jobs:
       - name: Build drop
         id: drop
         env:
-          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           FORCE: ${{ inputs.force && '--force' || '' }}
         run: uv run --project tools/scraper python -m driftwall_scraper --catalog-dir catalog drop $FORCE
       - name: Upload catalog

@@ -1,0 +1,29 @@
+{
+  "file": "esa-weic2427a.mp4",
+  "url": "https://cdn.esawebb.org/archives/videos/ultra_hd/weic2427a.mp4",
+  "source": "esa",
+  "sourcePageUrl": "https://esawebb.org/videos/weic2427a/",
+  "author": "ESA/Webb, NASA & CSA",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "category": "Space",
+  "segments": [
+    {
+      "slug": "esa-weic2427a",
+      "title": "Sombrero",
+      "mode": "pingpong",
+      "start": 2.0,
+      "duration": 27.0,
+      "rank": 28,
+      "posterAt": 13.5,
+      "description": "The Sombrero Galaxy seen edge-on, its clumpy dust ring glowing in infrared.",
+      "tags": [
+        "space",
+        "galaxy",
+        "webb",
+        "blue",
+        "minimal"
+      ]
+    }
+  ]
+}

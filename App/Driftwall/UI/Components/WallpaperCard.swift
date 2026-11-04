@@ -140,7 +140,7 @@ struct WallpaperActions: View {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString("driftwall://wallpaper/\(wallpaper.id)", forType: .string)
             }
-            Link(destination: wallpaper.sourcePageURL) { Label("View on \(wallpaper.source.capitalized)", systemImage: "safari") }
+            Link(destination: wallpaper.sourcePageURL) { Label("View on \(wallpaper.sourceName)", systemImage: "safari") }
         }
     }
 }

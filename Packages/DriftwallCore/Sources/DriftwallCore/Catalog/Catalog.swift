@@ -68,6 +68,16 @@ public struct Wallpaper: Codable, Hashable, Sendable, Identifiable {
     public static let minimumHeight = 1080
 
     public var is4K: Bool { height >= Self.minimum4KHeight && width > height }
+
+    /// Human name of where the clip comes from, for "View on …" links.
+    public var sourceName: String {
+        switch source {
+        case "nasa": "NASA"
+        case "esa": sourcePageURL.host() == "esahubble.org" ? "ESA/Hubble" : "ESA/Webb"
+        case "blender": "Blender Studio"
+        default: source.capitalized
+        }
+    }
     public var meetsMinimumResolution: Bool { height >= Self.minimumHeight && width > height }
 
     /// Labelled by the short side, so a portrait clip isn't mislabelled by its height.
@@ -88,10 +98,11 @@ public struct Wallpaper: Codable, Hashable, Sendable, Identifiable {
 
     /// Hosts the app will fetch media from or open in the browser. Anything else is dropped.
     public static let allowedHosts: Set<String> = [
-        "mixkit.co", "assets.mixkit.co", "www.pexels.com", "videos.pexels.com", "images.pexels.com",
-        "pixabay.com", "cdn.pixabay.com",
-        // Open-licence film loops are published as GitHub Release assets.
-        "github.com", "studio.blender.org",
+        // Every loop's media is published as a GitHub Release asset.
+        "github.com",
+        // Source pages and licences, for credit links.
+        "svs.gsfc.nasa.gov", "www.nasa.gov", "esawebb.org", "esahubble.org",
+        "studio.blender.org", "commons.wikimedia.org", "creativecommons.org",
     ]
     static let reservedIDPrefix = "custom-"
     static let maxTitleLength = 200
@@ -154,8 +165,7 @@ public struct Catalog: Codable, Hashable, Sendable {
     public static let supportedSchemaVersion = 1
     public static let maxWallpapers = 5_000
     public static let categoryOrder = [
-        "Anime", "Animated", "Gaming", "Space", "Cozy", "Drive", "Nature", "City", "Ocean", "Seasons", "Fantasy",
-        "Sci-fi", "Wildlife", "Cats", "Abstract",
+        "Space", "Cinematic", "Animated", "Fantasy", "Sci-fi", "Nature", "Abstract",
     ]
 
     public let schemaVersion: Int
