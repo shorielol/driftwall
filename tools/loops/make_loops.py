@@ -55,12 +55,31 @@ def probe(path: Path) -> dict:
 VT_QUALITY = 80
 
 
+# Busy pans at quality 80 reach 40-55 Mbps, which makes a one-minute wallpaper a 300-500 MB download.
+# Anything above this (scaled to the frame size) is re-encoded at the cap, where it still looks clean.
+MAX_UHD_MBPS = 20
+
+
 def hevc() -> list[str]:
     """A wallpaper is watched full screen for hours, so favour detail over file size."""
     encoders = subprocess.run(["ffmpeg", "-hide_banner", "-encoders"], capture_output=True, text=True).stdout
     if "hevc_videotoolbox" in encoders:
         return ["-c:v", "hevc_videotoolbox", "-q:v", str(VT_QUALITY), "-tag:v", "hvc1"]
     return ["-c:v", "libx265", "-crf", "18", "-preset", "slow", "-tag:v", "hvc1"]
+
+
+def cap_bitrate(master: Path) -> None:
+    """Re-encode the master at MAX_UHD_MBPS when constant quality overshot it."""
+    info = probe(master)
+    cap_mbps = MAX_UHD_MBPS * info["width"] * info["height"] / (UHD_WIDTH * UHD_HEIGHT)
+    actual_mbps = master.stat().st_size * 8 / info["duration"] / 1_000_000
+    if actual_mbps <= cap_mbps:
+        return
+    capped = master.with_suffix(".capped.mp4")
+    rate = f"{cap_mbps:.1f}M"
+    run(["ffmpeg", "-y", "-i", str(master), "-an", "-c:v", "hevc_videotoolbox", "-b:v", rate, "-maxrate", rate,
+         "-tag:v", "hvc1", "-movflags", "+faststart", str(capped)])
+    capped.replace(master)
 
 
 INTERMEDIATE = ["-c:v", "prores_ks", "-profile:v", "2", "-pix_fmt", "yuv422p10le", "-an"]
@@ -152,6 +171,7 @@ def make_loop(manifest: dict, seg: dict, sources: Path, out: Path) -> dict:
             crossfade_loop(clip, duration, master)
         else:
             pingpong_loop(clip, duration, work, master)
+    cap_bitrate(master)
 
     run(["ffmpeg", "-y", "-i", str(master), "-vf", "scale=-2:720", "-an", "-c:v", "libx264", "-crf", "24",
          "-preset", "medium", "-movflags", "+faststart", str(preview)])
