@@ -49,13 +49,16 @@ public struct AppSettings: Codable, Hashable, Sendable {
     public var dayNightSchedule: DayNightSchedule
     /// Offer to import videos that land in ~/Downloads. Off by default: it needs folder access.
     public var watchDownloads: Bool
+    /// Play the wallpaper on the lock screen through a private macOS API. Off by default.
+    public var animateLockScreen: Bool
 
     public init(
         launchAtLogin: Bool = false, autoStartWallpapers: Bool = true, autoPause: AutoPauseSettings = AutoPauseSettings(),
         playbackRate: Double = 1.0, scaling: VideoScaling = .fill, cacheLimitGB: Int = 10,
         notifyNewDrops: Bool = true, rotateLatestDrop: Bool = false, rotationInterval: RotationInterval = .hourly,
         setStaticFallback: Bool = true, catalogURLOverride: String = "",
-        dayNightSchedule: DayNightSchedule = .standard, watchDownloads: Bool = false
+        dayNightSchedule: DayNightSchedule = .standard, watchDownloads: Bool = false,
+        animateLockScreen: Bool = false
     ) {
         self.launchAtLogin = launchAtLogin
         self.autoStartWallpapers = autoStartWallpapers
@@ -70,6 +73,7 @@ public struct AppSettings: Codable, Hashable, Sendable {
         self.catalogURLOverride = catalogURLOverride
         self.dayNightSchedule = dayNightSchedule
         self.watchDownloads = watchDownloads
+        self.animateLockScreen = animateLockScreen
     }
 
     public init(from decoder: any Decoder) throws {
@@ -88,7 +92,8 @@ public struct AppSettings: Codable, Hashable, Sendable {
             setStaticFallback: try c.decodeIfPresent(Bool.self, forKey: .setStaticFallback) ?? base.setStaticFallback,
             catalogURLOverride: try c.decodeIfPresent(String.self, forKey: .catalogURLOverride) ?? base.catalogURLOverride,
             dayNightSchedule: try c.decodeIfPresent(DayNightSchedule.self, forKey: .dayNightSchedule) ?? base.dayNightSchedule,
-            watchDownloads: try c.decodeIfPresent(Bool.self, forKey: .watchDownloads) ?? base.watchDownloads
+            watchDownloads: try c.decodeIfPresent(Bool.self, forKey: .watchDownloads) ?? base.watchDownloads,
+            animateLockScreen: try c.decodeIfPresent(Bool.self, forKey: .animateLockScreen) ?? base.animateLockScreen
         )
     }
 

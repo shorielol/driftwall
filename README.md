@@ -56,7 +56,9 @@ The reasoning behind the catalog, with the data, is in [docs/CONTENT_RESEARCH.md
 ## FAQ
 
 **Can it animate the lock screen?**
-Not yet. macOS has no public API for an animated lock screen, and the apps that manage it load a private Apple framework. Driftwall sets a still frame from your wallpaper instead, so the lock screen and Mission Control match.
+Yes, as an experiment. Turn on "Animate the lock screen" in Settings. macOS has no public API for this, so Driftwall uses SkyLight, a private system framework, to draw a second copy of your wallpaper on the lock screen. There is no layer between the lock screen's wallpaper and its clock and password field, so the video sits above both: it fades in after about six seconds without input and steps aside as soon as you touch the keyboard or trackpad.
+
+It's off by default, it only plays while the Mac is locked and the usual pause rules allow it, and a macOS update could break it. If that happens the lock screen keeps the still frame, which Driftwall sets from your wallpaper so the lock screen and Mission Control match. Original scenes don't animate there yet, only video wallpapers. Tested on macOS 27.
 
 **How much battery does it use?**
 Playback is hardware-decoded and stops whenever an auto-pause rule applies. If you want to be strict, turn on "Whenever running on battery" in Settings.

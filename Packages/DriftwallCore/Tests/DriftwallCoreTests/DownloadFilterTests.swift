@@ -27,4 +27,12 @@ struct DownloadFilterTests {
         let on = try JSONDecoder().decode(AppSettings.self, from: Data(#"{"watchDownloads":true}"#.utf8))
         #expect(on.watchDownloads)
     }
+
+    @Test func `animating the lock screen is off by default and survives old settings files`() throws {
+        #expect(AppSettings().animateLockScreen == false)
+        let decoded = try JSONDecoder().decode(AppSettings.self, from: Data("{}".utf8))
+        #expect(decoded.animateLockScreen == false)
+        let on = try JSONDecoder().decode(AppSettings.self, from: Data(#"{"animateLockScreen":true}"#.utf8))
+        #expect(on.animateLockScreen)
+    }
 }

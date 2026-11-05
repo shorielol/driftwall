@@ -25,11 +25,15 @@ public struct SystemState: Hashable, Sendable {
     public var isOnBattery: Bool
     public var isLowPowerMode: Bool
     public var isUserPaused: Bool
+    /// The display is off or the user session is switched away. Not set for a plain lock.
     public var isDisplayAsleep: Bool
+    /// The screen is showing the macOS lock screen.
+    public var isScreenLocked: Bool
 
     public init(
         fullscreenDisplayIDs: Set<DisplayID> = [], batteryPercent: Int? = nil, isOnBattery: Bool = false,
-        isLowPowerMode: Bool = false, isUserPaused: Bool = false, isDisplayAsleep: Bool = false
+        isLowPowerMode: Bool = false, isUserPaused: Bool = false, isDisplayAsleep: Bool = false,
+        isScreenLocked: Bool = false
     ) {
         self.fullscreenDisplayIDs = fullscreenDisplayIDs
         self.batteryPercent = batteryPercent
@@ -37,6 +41,7 @@ public struct SystemState: Hashable, Sendable {
         self.isLowPowerMode = isLowPowerMode
         self.isUserPaused = isUserPaused
         self.isDisplayAsleep = isDisplayAsleep
+        self.isScreenLocked = isScreenLocked
     }
 }
 
@@ -64,7 +69,8 @@ public enum AutoPausePolicy {
     /// Why `display` should be paused right now, or nil to keep playing. Highest priority first.
     public static func reason(display: DisplayID, state: SystemState, settings: AutoPauseSettings) -> PauseReason? {
         if state.isUserPaused { return .user }
-        if state.isDisplayAsleep { return .displayAsleep }
+        // The desktop is hidden behind the lock screen, so it never plays while locked.
+        if state.isDisplayAsleep || state.isScreenLocked { return .displayAsleep }
         if settings.onFullscreen, state.fullscreenDisplayIDs.contains(display) { return .fullscreenApp }
         if settings.onLowPowerMode, state.isLowPowerMode { return .lowPowerMode }
         if settings.onLowBattery, state.isOnBattery, let percent = state.batteryPercent,
@@ -73,5 +79,16 @@ public enum AutoPausePolicy {
         }
         if settings.onBatteryPower, state.isOnBattery { return .batteryPower }
         return nil
+    }
+
+    /// Whether the lock screen should show the animated wallpaper on `display`.
+    /// Uses the same user and power rules as the desktop, ignoring the lock itself and
+    /// full-screen apps (they sit behind the lock screen).
+    public static func allowsLockAnimation(display: DisplayID, state: SystemState, settings: AutoPauseSettings, enabled: Bool) -> Bool {
+        guard enabled, state.isScreenLocked else { return false }
+        var unlocked = state
+        unlocked.isScreenLocked = false
+        unlocked.fullscreenDisplayIDs = []
+        return reason(display: display, state: unlocked, settings: settings) == nil
     }
 }

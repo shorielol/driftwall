@@ -140,9 +140,18 @@ final class WallpaperEngine {
     /// Called when a video can't be shown (corrupt or unreadable file). The previous picture stays.
     var onPlaybackFailure: ((DisplayID, String) -> Void)?
 
+    /// Called whenever what a display is playing changes (shown, replaced, reverted or removed).
+    var onSlotChange: (() -> Void)?
+
     var activeDisplayIDs: Set<DisplayID> { Set(slots.keys) }
 
     func wallpaperID(on display: DisplayID) -> String? { slots[display]?.wallpaperID }
+
+    /// The local video playing on `display`, or nil for Original scenes (they have no file to loop).
+    func videoURL(on display: DisplayID) -> URL? { (slots[display]?.view as? LoopingPlayerView)?.url }
+
+    var currentRate: Float { rate }
+    var currentGravity: AVLayerVideoGravity { gravity }
 
     func show(url: URL, wallpaperID: String, on screen: NSScreen, paused: Bool) {
         show(.video(url), wallpaperID: wallpaperID, on: screen, paused: paused)
@@ -174,6 +183,7 @@ final class WallpaperEngine {
             fadeInWindow(window, when: view, display: display, wallpaperID: wallpaperID)
         }
         AppLog.info("Showing \(wallpaperID) on display \(display)")
+        onSlotChange?()
     }
 
     private static func key(for content: SurfaceContent) -> String {
@@ -233,6 +243,7 @@ final class WallpaperEngine {
                     slot.view = outgoing
                     slot.wallpaperID = outgoing.wallpaperID ?? slot.wallpaperID
                     slots[display] = slot
+                    onSlotChange?()
                 }
                 onPlaybackFailure?(display, wallpaperID)
                 return
@@ -291,6 +302,7 @@ final class WallpaperEngine {
         slot.view.tearDown()
         slot.window.orderOut(nil)
         slot.window.close()
+        onSlotChange?()
     }
 
     func removeAll() {

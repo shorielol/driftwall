@@ -41,7 +41,13 @@ struct SettingsView: View {
             Toggle("Launch Driftwall at login", isOn: model.binding(\.launchAtLogin))
             Toggle("Start live wallpapers automatically", isOn: model.binding(\.autoStartWallpapers))
             Toggle("Match the lock screen with a still frame", isOn: model.binding(\.setStaticFallback))
-            Text("macOS doesn't let third-party apps animate the lock screen. Driftwall sets a still from your live wallpaper so it matches.")
+            Text("Driftwall sets a still from your live wallpaper as the desktop picture, so the lock screen and Mission Control match.")
+                .settingsFootnote()
+            Toggle("Animate the lock screen (experimental)", isOn: model.binding(\.animateLockScreen))
+                .disabled(!model.lockScreen.isAvailable)
+            Text(model.lockScreen.isAvailable
+                 ? "Fades your live wallpaper in on the lock screen after a few idle seconds and hides it when you touch the keyboard or trackpad. macOS has no public way to do this, so Driftwall uses a private system API that an update could break. Keep the still frame on as the fallback."
+                 : "Not available on this version of macOS.")
                 .settingsFootnote()
             Toggle("Offer new videos from Downloads as wallpapers", isOn: model.binding(\.watchDownloads))
             Text("When an MP4, MOV or M4V finishes downloading, Driftwall asks if you want to use it. Imports stay on this Mac. macOS will ask once for access to Downloads.")

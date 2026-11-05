@@ -13,9 +13,10 @@ final class SystemMonitor {
     private(set) var isOnBattery = false
     private(set) var isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
     private var screensAsleep = false
-    private var screenLocked = false
+    private var screenLocked = SystemMonitor.currentlyLocked()
     private var sessionInactive = false
-    var isAsleepOrLocked: Bool { screensAsleep || screenLocked || sessionInactive }
+    /// The display is off or the session is switched away. A plain lock is reported separately.
+    private var isDisplayAsleep: Bool { screensAsleep || sessionInactive }
     private(set) var isDarkAppearance = false
 
     var onStateChange: (() -> Void)?
@@ -97,9 +98,14 @@ final class SystemMonitor {
 
     private func update(_ flag: ReferenceWritableKeyPath<SystemMonitor, Bool>, _ value: Bool) {
         guard self[keyPath: flag] != value else { return }
-        let before = isAsleepOrLocked
         self[keyPath: flag] = value
-        if before != isAsleepOrLocked { onStateChange?() }
+        onStateChange?()
+    }
+
+    /// True when the macOS lock screen is up right now, e.g. if Driftwall launches while locked.
+    static func currentlyLocked() -> Bool {
+        let session = CGSessionCopyCurrentDictionary() as? [String: Any]
+        return (session?["CGSSessionScreenIsLocked"] as? Bool) ?? false
     }
 
     /// Power source changes (plug/unplug, level steps) arrive immediately instead of on the next poll.
@@ -122,7 +128,8 @@ final class SystemMonitor {
             isOnBattery: isOnBattery,
             isLowPowerMode: isLowPowerMode,
             isUserPaused: userPaused,
-            isDisplayAsleep: isAsleepOrLocked
+            isDisplayAsleep: isDisplayAsleep,
+            isScreenLocked: screenLocked
         )
     }
 

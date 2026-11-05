@@ -144,6 +144,26 @@ extension AppModel {
             reasons[display] = reason
         }
         pauseReasons = reasons
+        updateLockScreen()
+    }
+
+    /// Show or hide the animated wallpaper on the lock screen to match the current state.
+    func updateLockScreen() {
+        var state = monitor.snapshot(userPaused: isUserPaused)
+        // Never trust a missed unlock notification: ask the session before covering the desktop.
+        state.isScreenLocked = state.isScreenLocked && SystemMonitor.currentlyLocked()
+        // "Play anyway" waives the power rules here too, as it does for the desktop.
+        let rules = isAutoPauseOverridden
+            ? AutoPauseSettings(onFullscreen: false, onLowPowerMode: false, onLowBattery: false, onBatteryPower: false)
+            : settings.autoPause
+        var items: [DisplayID: LockScreenWallpaper.Item] = [:]
+        for screen in NSScreen.screens {
+            let display = screen.displayID
+            guard AutoPausePolicy.allowsLockAnimation(display: display, state: state, settings: rules, enabled: settings.animateLockScreen),
+                  let url = engine.videoURL(on: display) else { continue }
+            items[display] = LockScreenWallpaper.Item(screen: screen, url: url)
+        }
+        lockScreen.sync(items, rate: engine.currentRate, gravity: engine.currentGravity)
     }
 
     // MARK: Scheduling

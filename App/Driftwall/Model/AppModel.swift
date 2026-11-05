@@ -89,6 +89,7 @@ final class AppModel {
     // Services
     let paths = AppPaths.live
     let engine = WallpaperEngine()
+    let lockScreen = LockScreenWallpaper()
     let monitor = SystemMonitor()
     @ObservationIgnored let cache: VideoCache
     @ObservationIgnored private let catalogService: CatalogService
@@ -146,6 +147,7 @@ final class AppModel {
             Task { await self?.refreshCatalog() }
         }
         engine.onPlaybackFailure = { [weak self] display, id in self?.playbackFailed(display: display, wallpaperID: id) }
+        engine.onSlotChange = { [weak self] in self?.updateLockScreen() }
         playbackEnabled = settings.autoStartWallpapers
         monitor.start()
         engine.setRate(settings.playbackRate)
@@ -174,6 +176,7 @@ final class AppModel {
         scheduleTask?.cancel()
         refreshLoop?.cancel()
         monitor.stop()
+        lockScreen.removeAll()
         engine.removeAll()
     }
 
@@ -292,6 +295,7 @@ final class AppModel {
         assignments = assignments.cleared()
         persistAssignments()
         engine.removeAll()
+        updateLockScreen()
         presenting.values.forEach { $0.task.cancel() }
         presenting = [:]
         retryTask?.cancel()
@@ -493,7 +497,7 @@ final class AppModel {
             notifyNewDrops: next.notifyNewDrops, rotateLatestDrop: next.rotateLatestDrop,
             rotationInterval: next.rotationInterval, setStaticFallback: next.setStaticFallback,
             catalogURLOverride: next.catalogURLOverride, dayNightSchedule: next.dayNightSchedule,
-            watchDownloads: next.watchDownloads
+            watchDownloads: next.watchDownloads, animateLockScreen: next.animateLockScreen
         )
         settings = next
         persist { try settingsStore.save(next) }
@@ -501,9 +505,16 @@ final class AppModel {
     }
 
     private func applySettingsChange(from old: AppSettings, to new: AppSettings) {
-        if old.playbackRate != new.playbackRate { engine.setRate(new.playbackRate) }
-        if old.scaling != new.scaling { engine.setScaling(new.scaling) }
+        if old.playbackRate != new.playbackRate {
+            engine.setRate(new.playbackRate)
+            lockScreen.setRate(engine.currentRate)
+        }
+        if old.scaling != new.scaling {
+            engine.setScaling(new.scaling)
+            lockScreen.setGravity(engine.currentGravity)
+        }
         if old.autoPause != new.autoPause { updatePause() }
+        if old.animateLockScreen != new.animateLockScreen { updateLockScreen() }
         if old.cacheLimitGB != new.cacheLimitGB {
             Task {
                 await cache.setLimit(bytes: new.cacheLimitBytes)

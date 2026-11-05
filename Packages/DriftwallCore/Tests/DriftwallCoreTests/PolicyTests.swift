@@ -161,6 +161,71 @@ struct AutoPauseTests {
     }
 }
 
+@Suite("Lock screen animation")
+struct LockAnimationTests {
+    let settings = AutoPauseSettings()
+
+    private func allowed(_ state: SystemState, enabled: Bool = true, rules: AutoPauseSettings? = nil) -> Bool {
+        AutoPausePolicy.allowsLockAnimation(display: 1, state: state, settings: rules ?? settings, enabled: enabled)
+    }
+
+    @Test func `plays while locked when the feature is on and nothing says pause`() {
+        #expect(allowed(SystemState(isScreenLocked: true)))
+    }
+
+    @Test func `stays off when the feature is off`() {
+        #expect(!allowed(SystemState(isScreenLocked: true), enabled: false))
+    }
+
+    @Test func `stays off when the screen is not locked`() {
+        #expect(!allowed(SystemState()))
+    }
+
+    @Test func `stays off while the display is asleep or the user paused`() {
+        #expect(!allowed(SystemState(isDisplayAsleep: true, isScreenLocked: true)))
+        #expect(!allowed(SystemState(isUserPaused: true, isScreenLocked: true)))
+    }
+
+    @Test func `respects low power mode and low battery`() {
+        #expect(!allowed(SystemState(isLowPowerMode: true, isScreenLocked: true)))
+        #expect(!allowed(SystemState(batteryPercent: 5, isOnBattery: true, isScreenLocked: true)))
+        let off = AutoPauseSettings(onLowPowerMode: false, onLowBattery: false)
+        #expect(allowed(SystemState(batteryPercent: 5, isOnBattery: true, isLowPowerMode: true, isScreenLocked: true), rules: off))
+    }
+
+    @Test func `a full-screen app behind the lock screen does not stop it`() {
+        #expect(allowed(SystemState(fullscreenDisplayIDs: [1], isScreenLocked: true)))
+    }
+
+    @Test func `the desktop wallpaper still pauses while locked`() {
+        #expect(AutoPausePolicy.reason(display: 1, state: SystemState(isScreenLocked: true), settings: settings) == .displayAsleep)
+    }
+}
+
+@Suite("Lock screen overlay")
+struct LockOverlayTests {
+    @Test func `stays hidden until the Mac has been idle for a few seconds`() {
+        #expect(!LockOverlayPolicy.shouldShow(isShowing: false, idleSeconds: 0.5))
+        #expect(!LockOverlayPolicy.shouldShow(isShowing: false, idleSeconds: LockOverlayPolicy.showAfter - 0.1))
+        #expect(LockOverlayPolicy.shouldShow(isShowing: false, idleSeconds: LockOverlayPolicy.showAfter))
+    }
+
+    @Test func `keeps showing while nothing is touched`() {
+        #expect(LockOverlayPolicy.shouldShow(isShowing: true, idleSeconds: 3))
+        #expect(LockOverlayPolicy.shouldShow(isShowing: true, idleSeconds: 60))
+    }
+
+    @Test func `any input hides it so the password field is reachable`() {
+        #expect(!LockOverlayPolicy.shouldShow(isShowing: true, idleSeconds: 0))
+        #expect(!LockOverlayPolicy.shouldShow(isShowing: true, idleSeconds: LockOverlayPolicy.hideWithin - 0.1))
+    }
+
+    @Test func `after input it waits the full idle time before coming back`() {
+        #expect(!LockOverlayPolicy.shouldShow(isShowing: false, idleSeconds: LockOverlayPolicy.hideWithin + 0.5))
+        #expect(!LockOverlayPolicy.shouldShow(isShowing: false, idleSeconds: LockOverlayPolicy.showAfter - 1))
+    }
+}
+
 @Suite("Display assignments")
 struct DisplayAssignmentTests {
     let builtIn = DisplayKey(name: "Built-in Retina Display", width: 1512, height: 982)
