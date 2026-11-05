@@ -11,7 +11,7 @@ struct RootView: View {
         @Bindable var model = model
         ZStack(alignment: .top) {
             Theme.ink.ignoresSafeArea()
-            TopographicBackground(opacity: 0.32, isActive: model.previewing == nil && model.isWindowVisible)
+            AuroraBackground(isActive: model.previewing == nil && model.isWindowVisible)
                 .ignoresSafeArea()
 
             screen

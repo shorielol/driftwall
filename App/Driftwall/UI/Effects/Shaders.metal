@@ -31,24 +31,6 @@ static float fbm(float2 p) {
     return value;
 }
 
-/// Topographic contour lines drifting slowly, tinted across the width.
-[[ stitchable ]] half4 topographicFlow(float2 position, half4 color, float2 size, float time,
-                                       half4 tintA, half4 tintB, float density) {
-    float2 uv = position / max(size.y, 1.0);
-    float n = fbm(uv * 2.2 + float2(time * 0.030, -time * 0.020))
-            + 0.35 * fbm(uv * 4.0 - float2(time * 0.015, time * 0.010));
-    float bands = n * density;
-    float f = fract(bands);
-    float edge = min(f, 1.0 - f);
-    float lineWidth = density * 0.0035;
-    float line = 1.0 - smoothstep(0.0, lineWidth, edge);
-    float glow = 1.0 - smoothstep(0.0, lineWidth * 7.0, edge);
-    float across = clamp(position.x / max(size.x, 1.0), 0.0, 1.0);
-    half4 tint = mix(tintA, tintB, half(smoothstep(0.1, 0.9, across)));
-    float alpha = line * 0.55 + glow * 0.08;
-    return half4(tint.rgb * half(alpha), half(alpha));
-}
-
 // ============================================================================
 // Driftwall Originals: live scenes rendered at native resolution.
 // All scenes are original procedural artwork. Coordinates: uv in 0..1, y up.

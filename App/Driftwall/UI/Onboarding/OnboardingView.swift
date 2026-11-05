@@ -29,7 +29,7 @@ struct OnboardingView: View {
     var body: some View {
         ZStack {
             Color.black.opacity(0.55).ignoresSafeArea()
-            TopographicBackground(tintA: Theme.violet, tintB: Theme.rose, density: 7, opacity: 0.5)
+            AuroraBackground(opacity: 0.9)
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
